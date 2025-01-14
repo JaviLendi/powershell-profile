@@ -1,7 +1,7 @@
 ### PowerShell Profile Refactor
 ### Version 1.03 - Refactored
 
-$debug = $false
+$debug = $true
 
 if ($debug) {
     Write-Host "#######################################" -ForegroundColor Red
@@ -55,6 +55,8 @@ function Update-Profile {
     }
 }
 
+winfetch
+
 # skip in debug mode
 if (-not $debug) {
     Update-Profile
@@ -64,7 +66,7 @@ if (-not $debug) {
 
 function Update-PowerShell {
     try {
-        Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
+        #Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
         $updateNeeded = $false
         $currentVersion = $PSVersionTable.PSVersion.ToString()
         $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
@@ -75,11 +77,11 @@ function Update-PowerShell {
         }
 
         if ($updateNeeded) {
-            Write-Host "Updating PowerShell..." -ForegroundColor Yellow
+            #Write-Host "Updating PowerShell..." -ForegroundColor Yellow
             Start-Process powershell.exe -ArgumentList "-NoProfile -Command winget upgrade Microsoft.PowerShell --accept-source-agreements --accept-package-agreements" -Wait -NoNewWindow
             Write-Host "PowerShell has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
         } else {
-            Write-Host "Your PowerShell is up to date." -ForegroundColor Green
+            #Write-Host "Your PowerShell is up to date." -ForegroundColor Green
         }
     } catch {
         Write-Error "Failed to update PowerShell. Error: $_"
@@ -131,12 +133,6 @@ function Test-CommandExists {
     return $exists
 }
 
-# Utility Functions
-function Test-CommandExists {
-    param($command)
-    $exists = $null -ne (Get-Command $command -ErrorAction SilentlyContinue)
-    return $exists
-}
 
 # Editor Configuration
 $EDITOR = if (Test-CommandExists code) { 'code' }
@@ -149,6 +145,7 @@ Set-Alias -Name vim -Value $EDITOR
 function Edit-Profile {
     vim $PROFILE.CurrentUserAllHosts
 }
+Set-Alias -Name ep -Value Edit-Profile
 
 function touch($file) { "" | Out-File $file -Encoding ASCII }
 function ff($name) {
@@ -160,9 +157,9 @@ function ff($name) {
 # Network Utilities
 function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
 
-# Open WinUtil pre-release
-function winutildev {
-	irm https://christitus.com/windev | iex
+# Open WinUtil full-release
+function winutil {
+	irm https://christitus.com/win | iex
 }
 
 # System Utilities
